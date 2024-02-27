@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         title: 'Word App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 248, 143, 16)),
         ),
         home: MyHomePage(),
       ),
@@ -30,9 +30,10 @@ class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   var favorites = <WordPair>[];
   var history = <WordPair>[];
-
+  var results = <WordPair>[];
   void getNext() {
     history.add(current);
+    results = history;
     current = WordPair.random();
     notifyListeners();
   }
@@ -59,12 +60,15 @@ class MyAppState extends ChangeNotifier {
   }
 
   void changeSearch(value){
-      var results=history;
-      var currList=history.toList();
-      if(currList.isEmpty) results=history;
-      else results=currList.where((word) =>word.asLowerCase.contains(value.toLowerCase())).toList();
-      notifyListeners();
+    results = history;
+
+    if(history.isEmpty) {
+      results=history;
+    } else {
+      results=history.where((word) =>word.asLowerCase.contains(value.toLowerCase())).toList();
     }
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -260,23 +264,41 @@ class HistoryPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-
-    if(appState.history.isEmpty){
-      return Center(child: Text("You have nothing in your history."));
-    }
-    return ListView(
-          children: [
-            for (var pair in appState.history)
-              ListTile(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: TextField(
+            onChanged: (value) =>
+              // Call a function to update the filteredFavorites list
+              appState.changeSearch(value)
+            ,
+            decoration: InputDecoration(
+              labelText: 'Search',
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        Expanded(
+          child:(appState.results.isNotEmpty) ? ListView.builder(
+            itemCount: appState.results.length,
+            itemBuilder: (BuildContext context, int index) {
+              final pair = appState.results[index];
+              return ListTile(
                 leading: IconButton(
                   icon: Icon(Icons.remove_red_eye_outlined),
-                  onPressed: () =>modalDialog(context, pair),
+                  onPressed: () => modalDialog(context,pair),
                   tooltip: "View",
                 ),
                 title: Text(pair.asLowerCase),
-              ),
-          ],
-        );
+              );
+            },
+          )
+          : Center(child: Text("You have nothing in your history."))
+        ),
+      ],
+    );
   }
 }
 
