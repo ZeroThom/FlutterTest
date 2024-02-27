@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 void main() {
   runApp(MyApp());
@@ -56,6 +57,14 @@ class MyAppState extends ChangeNotifier {
     favorites.remove(pair);
     notifyListeners();
   }
+
+  void changeSearch(value){
+      var results=history;
+      var currList=history.toList();
+      if(currList.isEmpty) results=history;
+      else results=currList.where((word) =>word.asLowerCase.contains(value.toLowerCase())).toList();
+      notifyListeners();
+    }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -238,12 +247,12 @@ class FavoritesPage extends StatelessWidget{
 }
 
 class HistoryPage extends StatelessWidget{
-  void modalDialog(BuildContext context){
+  void modalDialog(BuildContext context, WordPair pair){
     showDialog<void>(
       context: context, 
       builder: (context) => AlertDialog(
         title: Text("Definition"),
-        content: Text("$context"),
+        content: Text("First: \n\t${pair.first} Second: \n\t${pair.second}"),
       ),
     );
   }
@@ -251,22 +260,23 @@ class HistoryPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+
     if(appState.history.isEmpty){
       return Center(child: Text("You have nothing in your history."));
     }
     return ListView(
-      children: [
-        for (var pair in appState.history)
-          ListTile(
-            leading: IconButton(
-              icon: Icon(Icons.remove_red_eye_outlined),
-              onPressed: ()  => modalDialog(context),
-              tooltip: "Delete",
-            ),
-            title: Text(pair.asLowerCase),
-          ),
-      ],
-    );
+          children: [
+            for (var pair in appState.history)
+              ListTile(
+                leading: IconButton(
+                  icon: Icon(Icons.remove_red_eye_outlined),
+                  onPressed: () =>modalDialog(context, pair),
+                  tooltip: "View",
+                ),
+                title: Text(pair.asLowerCase),
+              ),
+          ],
+        );
   }
 }
 
