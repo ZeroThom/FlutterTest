@@ -1,14 +1,15 @@
+import 'dart:convert';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         title: 'Word App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 248, 143, 16)),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
         home: MyHomePage(),
       ),
@@ -31,6 +32,7 @@ class MyAppState extends ChangeNotifier {
   var favorites = <WordPair>[];
   var history = <WordPair>[];
   var results = <WordPair>[];
+  
   void getNext() {
     history.add(current);
     results = history;
@@ -251,13 +253,32 @@ class FavoritesPage extends StatelessWidget{
 }
 
 class HistoryPage extends StatelessWidget{
-  void modalDialog(BuildContext context, WordPair pair){
+  void modalDialog(BuildContext context, WordPair pair) {
+   // List<dynamic> firstDefinition = jsonDecode((await http.get(Uri.parse("https://api.dictionaryapi.dev/api/v2/entries/en/${pair.first}"))).body);
+    //List<dynamic> secondDefinition= jsonDecode((await http.get(Uri.parse("https://api.dictionaryapi.dev/api/v2/entries/en/${pair.second}"))).body);
     showDialog<void>(
       context: context, 
-      builder: (context) => AlertDialog(
-        title: Text("Definition"),
-        content: Text("First: \n\t${pair.first} Second: \n\t${pair.second}"),
-      ),
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Definition"),
+          content: ListView.builder(
+            itemCount: 2,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                title: Text(
+                  (index==0)?pair.first:pair.second,
+                //  "${(index == 0)?firstDefinition[0]['word']:secondDefinition[0]['word']}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  )
+                ),
+                subtitle: Text("Hello")//Text("${(index==0)?firstDefinition[0]['meanings'][0]['definitions'][0]['definition']:secondDefinition[0]['meanings'][0]['definitions'][0]['definition']}"),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -271,8 +292,7 @@ class HistoryPage extends StatelessWidget{
           child: TextField(
             onChanged: (value) =>
               // Call a function to update the filteredFavorites list
-              appState.changeSearch(value)
-            ,
+              appState.changeSearch(value),
             decoration: InputDecoration(
               labelText: 'Search',
               prefixIcon: Icon(Icons.search),
@@ -287,9 +307,9 @@ class HistoryPage extends StatelessWidget{
               final pair = appState.results[index];
               return ListTile(
                 leading: IconButton(
-                  icon: Icon(Icons.remove_red_eye_outlined),
+                  icon: Icon(Icons.info_outline),
                   onPressed: () => modalDialog(context,pair),
-                  tooltip: "View",
+                  tooltip: "Info",
                 ),
                 title: Text(pair.asLowerCase),
               );
