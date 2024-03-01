@@ -252,37 +252,37 @@ class FavoritesPage extends StatelessWidget{
 }
 
 class HistoryPage extends StatelessWidget{
-
-void modalDialog(BuildContext context, WordPair pair) async{//jsonDecode((await http.get(Uri.parse("https://api.dictionaryapi.dev/api/v2/entries/en/${pair.second}"))).body);
-    showDialog<void>(
-      context: context, 
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Definition"),
-          content: SizedBox(
-            width: 300.0,
-            height: 300.0,
-            child: ListView.builder(
-              itemCount: 2,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(
-                    (index==0)?pair.first:pair.second,
-                    //"${(index == 0)?firstDefinition[0]['word']:secondDefinition[0]['word']}",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                    )
-                  ),
-                  subtitle: Text("Hello")//Text("${(index==0)?firstDefinition[0]['meanings'][0]['definitions'][0]['definition']:secondDefinition[0]['meanings'][0]['definitions'][0]['definition']}"),
-                );
-              },
-            ),
-          ),
-        );
-      },
-    );
-  }
+//MOVED TO modalGPT.dart
+// void modalDialog(BuildContext context, WordPair pair) async{//jsonDecode((await http.get(Uri.parse("https://api.dictionaryapi.dev/api/v2/entries/en/${pair.second}"))).body);
+//     showDialog<void>(
+//       context: context, 
+//       builder: (context) {
+//         return AlertDialog(
+//           title: Text("Definition"),
+//           content: SizedBox(
+//             width: 300.0,
+//             height: 300.0,
+//             child: ListView.builder(
+//               itemCount: 2,
+//               itemBuilder: (BuildContext context, int index) {
+//                 return ListTile(
+//                   title: Text(
+//                     (index==0)?pair.first:pair.second,
+//                     //"${(index == 0)?firstDefinition[0]['word']:secondDefinition[0]['word']}",
+//                     style: TextStyle(
+//                       fontWeight: FontWeight.bold,
+//                       decoration: TextDecoration.underline,
+//                     )
+//                   ),
+//                   subtitle: Text("Hello")//Text("${(index==0)?firstDefinition[0]['meanings'][0]['definitions'][0]['definition']:secondDefinition[0]['meanings'][0]['definitions'][0]['definition']}"),
+//                 );
+//               },
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
 
   @override
   Widget build(BuildContext context) {
